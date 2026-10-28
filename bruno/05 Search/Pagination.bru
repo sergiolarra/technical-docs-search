@@ -1,0 +1,27 @@
+meta {
+  name: Pagination
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/documents/search?q=arquitectura&page=0&size=1
+  body: none
+  auth: none
+}
+
+params:query {
+  q: arquitectura
+  page: 0
+  size: 1
+}
+
+tests {
+  test("returns one result per page with totals", function () {
+    const body = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(body.results).to.have.lengthOf(1);
+    expect(body.size).to.equal(1);
+    expect(body.totalPages).to.equal(body.totalHits);
+  });
+}

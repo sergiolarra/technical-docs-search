@@ -1,0 +1,24 @@
+meta {
+  name: Exclusion
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/documents/search?q=arquitectura -hexagonal
+  body: none
+  auth: none
+}
+
+params:query {
+  q: arquitectura -hexagonal
+}
+
+tests {
+  test("excluded term removes matching documents", function () {
+    expect(res.getStatus()).to.equal(200);
+    const titles = res.getBody().results.map(r => r.title);
+    expect(titles).to.include("Arquitectura de referencia");
+    expect(titles).to.not.include("Guía de la API de documentos");
+  });
+}

@@ -3,7 +3,6 @@ package com.kata.docsearch.domain.model;
 import com.kata.docsearch.domain.exception.InvalidDocumentException;
 
 import java.util.List;
-import java.util.Locale;
 
 public record DocumentMetadata(String title, String author, String category, List<String> tags, String version) {
 
@@ -12,11 +11,7 @@ public record DocumentMetadata(String title, String author, String category, Lis
         author = requireText(author, "author");
         category = requireText(category, "category");
         version = requireText(version, "version");
-        tags = tags == null ? List.of() : tags.stream()
-                .filter(t -> t != null && !t.isBlank())
-                .map(t -> t.trim().toLowerCase(Locale.ROOT))
-                .distinct()
-                .toList();
+        tags = Tags.normalize(tags);
     }
 
     private static String requireText(String value, String field) {

@@ -2,6 +2,7 @@ package com.kata.docsearch.infrastructure.adapter.in.web;
 
 import com.kata.docsearch.domain.exception.DocumentNotFoundException;
 import com.kata.docsearch.domain.exception.InvalidDocumentException;
+import com.kata.docsearch.domain.exception.InvalidSearchQueryException;
 import com.kata.docsearch.domain.exception.UnsupportedDocumentFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
@@ -55,6 +56,11 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleUnexpected(Exception e) {
         log.error("Unexpected error", e);
         return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal error", "An unexpected error occurred");
+    }
+
+    @ExceptionHandler(InvalidSearchQueryException.class)
+    ProblemDetail handleInvalidSearchQuery(InvalidSearchQueryException e) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid search query", e.getMessage());
     }
 
     /** Adds field errors to the body: {"errors": {"title": "must not be blank"}}. */
