@@ -1,0 +1,25 @@
+meta {
+  name: Get PDF document
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/documents/{{pdfDocumentId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  await bru.sleep(2000);
+}
+
+tests {
+  test("PDF text was extracted with Tika", function () {
+    const body = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(body.status).to.equal("INDEXADO");
+    expect(body.format).to.equal("PDF");
+    expect(body.content).to.contain("Arquitectura de referencia");
+  });
+}

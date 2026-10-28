@@ -1,0 +1,25 @@
+meta {
+  name: Unsupported extension (415)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/instalador.exe)
+  title: Instalador
+  author: Desconocido
+  category: Pruebas
+  version: 1.0
+}
+
+tests {
+  test("only PDF, TXT and Markdown are allowed", function () {
+    expect(res.getStatus()).to.equal(415);
+  });
+}

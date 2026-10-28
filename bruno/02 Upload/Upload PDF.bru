@@ -1,0 +1,33 @@
+meta {
+  name: Upload PDF
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/arquitectura-referencia.pdf)
+  title: Arquitectura de referencia
+  author: María Ruiz
+  category: Arquitectura
+  tags: microservicios,colas
+  version: 1.0
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    bru.setVar("pdfDocumentId", res.getBody().id);
+  }
+}
+
+tests {
+  test("responds 202 with status PROCESANDO", function () {
+    expect(res.getStatus()).to.equal(202);
+    expect(res.getBody().status).to.equal("PROCESANDO");
+  });
+}

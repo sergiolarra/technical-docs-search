@@ -1,0 +1,21 @@
+meta {
+  name: Health check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/actuator/health
+  body: none
+  auth: none
+}
+
+tests {
+  test("application, database and broker are UP", function () {
+    const body = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(body.status).to.equal("UP");
+    expect(body.components.db.status).to.equal("UP");
+    expect(body.components.rabbit.status).to.equal("UP");
+  });
+}

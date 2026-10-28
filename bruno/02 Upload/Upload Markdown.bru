@@ -1,0 +1,42 @@
+meta {
+  name: Upload Markdown
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/guia-api.md)
+  title: Guía de la API de documentos
+  author: Ana Pérez
+  category: Backend
+  tags: java,rest,arquitectura
+  version: 1.0
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    bru.setVar("markdownDocumentId", res.getBody().id);
+  }
+}
+
+tests {
+  test("responds 202 with status PROCESANDO", function () {
+    expect(res.getStatus()).to.equal(202);
+    expect(res.getBody().status).to.equal("PROCESANDO");
+    expect(res.getBody().id).to.be.a("string");
+  });
+
+  test("returns the Location header", function () {
+    expect(res.getHeader("location")).to.contain("/api/documents/");
+  });
+}
+
+docs {
+  HU-01: single upload. The response is immediate (202); text extraction runs in the background.
+}

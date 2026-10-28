@@ -1,0 +1,32 @@
+meta {
+  name: Get Markdown document
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/documents/{{markdownDocumentId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  await bru.sleep(2000);
+}
+
+tests {
+  test("document is INDEXADO with extracted content", function () {
+    const body = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(body.status).to.equal("INDEXADO");
+    expect(body.content).to.contain("arquitectura hexagonal");
+  });
+
+  test("tags are normalized", function () {
+    expect(res.getBody().tags).to.deep.equal(["java", "rest", "arquitectura"]);
+  });
+}
+
+docs {
+  If the status is still PROCESANDO, run the request again.
+}

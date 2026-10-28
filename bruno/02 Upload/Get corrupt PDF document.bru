@@ -1,0 +1,24 @@
+meta {
+  name: Get corrupt PDF document
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/documents/{{corruptDocumentId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  await bru.sleep(2000);
+}
+
+tests {
+  test("document ends in ERROR with a reason", function () {
+    const body = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(body.status).to.equal("ERROR");
+    expect(body.errorMessage).to.be.a("string").and.not.be.empty;
+  });
+}

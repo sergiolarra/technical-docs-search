@@ -1,0 +1,18 @@
+meta {
+  name: Unknown document (404)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/documents/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+tests {
+  test("returns 404 as ProblemDetail", function () {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody().title).to.equal("Document not found");
+  });
+}
