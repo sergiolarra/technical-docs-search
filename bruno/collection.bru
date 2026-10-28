@@ -1,0 +1,11 @@
+docs {
+  # Technical Docs Search API
+  
+  Requests to exercise the document upload flow (HU-01) end to end.
+  
+  1. Start the stack: `docker compose up -d` and `./mvnw spring-boot:run` (backend).
+  2. Select the **Local** environment.
+  3. Run the collection with the Runner: requests run in order and chain IDs through runtime variables.
+  
+  `Get ...` requests wait 2 seconds before running so the consumer has time to process the document.
+}

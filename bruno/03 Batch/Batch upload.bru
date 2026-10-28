@@ -1,0 +1,45 @@
+meta {
+  name: Batch upload
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/documents/batch
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  files: @file(samples/guia-api.md)
+  files: @file(samples/manual-despliegue.txt)
+  files: @file(samples/ejecutable-disfrazado.pdf)
+  author: Equipo Plataforma
+  category: Documentación
+  tags: lote,importacion
+  version: 1.0
+}
+
+tests {
+  test("responds 202 with one result per file", function () {
+    expect(res.getStatus()).to.equal(202);
+    expect(res.getBody()).to.have.lengthOf(3);
+  });
+
+  test("valid files are accepted and titled after their file name", function () {
+    const [md, txt] = res.getBody();
+    expect(md.accepted).to.equal(true);
+    expect(md.status).to.equal("PROCESANDO");
+    expect(txt.accepted).to.equal(true);
+  });
+
+  test("the disguised executable is rejected without blocking the others", function () {
+    const rejected = res.getBody()[2];
+    expect(rejected.accepted).to.equal(false);
+    expect(rejected.error).to.contain("does not match");
+  });
+}
+
+docs {
+  Shared metadata for every file; each title comes from its file name. Up to 20 files per batch.
+}

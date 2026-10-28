@@ -1,0 +1,26 @@
+meta {
+  name: Disguised executable (415)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/ejecutable-disfrazado.pdf)
+  title: Factura
+  author: Desconocido
+  category: Pruebas
+  version: 1.0
+}
+
+tests {
+  test("rejected by content (magic bytes), not by extension", function () {
+    expect(res.getStatus()).to.equal(415);
+    expect(res.getBody().title).to.equal("Unsupported document format");
+  });
+}

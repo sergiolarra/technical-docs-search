@@ -1,0 +1,33 @@
+meta {
+  name: Upload TXT
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/manual-despliegue.txt)
+  title: Manual de despliegue
+  author: Luis Gómez
+  category: DevOps
+  tags: docker,postgresql,rabbitmq
+  version: 2.3
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    bru.setVar("txtDocumentId", res.getBody().id);
+  }
+}
+
+tests {
+  test("responds 202 with status PROCESANDO", function () {
+    expect(res.getStatus()).to.equal(202);
+    expect(res.getBody().status).to.equal("PROCESANDO");
+  });
+}

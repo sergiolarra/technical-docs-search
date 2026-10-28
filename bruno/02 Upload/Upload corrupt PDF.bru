@@ -1,0 +1,36 @@
+meta {
+  name: Upload corrupt PDF
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/documents
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/pdf-corrupto.pdf)
+  title: PDF corrupto
+  author: QA
+  category: Pruebas
+  version: 1.0
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    bru.setVar("corruptDocumentId", res.getBody().id);
+  }
+}
+
+tests {
+  test("is accepted: it starts with the PDF signature", function () {
+    expect(res.getStatus()).to.equal(202);
+  });
+}
+
+docs {
+  The file starts with `%PDF-`, so it passes the content type check, but the parser cannot read it.
+  Processing must end in ERROR without retries.
+}

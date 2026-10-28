@@ -1,0 +1,4 @@
+Manual de despliegue
+
+Configuración de PostgreSQL 17 y RabbitMQ 4 con Docker Compose.
+Los contenedores exponen healthchecks para que el backend espere a que estén listos.
