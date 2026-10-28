@@ -1,0 +1,40 @@
+meta {
+  name: Accent insensitive
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/documents/search?q=BUSQUEDA
+  body: none
+  auth: none
+}
+
+params:query {
+  q: BUSQUEDA
+}
+
+tests {
+  test("finds documents containing 'búsqueda' from an upper-case query without accent", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().totalHits).to.be.greaterThan(0);
+  });
+
+  test("highlights the original accented word", function () {
+    const matches = res.getBody().results
+      .flatMap(r => r.snippet.concat(r.titleHighlight))
+      .filter(f => f.match)
+      .map(f => f.text.toLowerCase());
+    expect(matches).to.include("búsqueda");
+  });
+
+  test("responds within the 1 s budget (Server-Timing)", function () {
+    const dur = parseFloat(/dur=([\d.]+)/.exec(res.getHeader("server-timing"))[1]);
+    expect(dur).to.be.below(1000);
+  });
+}
+
+docs {
+  The es_unaccent text search configuration strips accents before stemming, so BUSQUEDA, busqueda
+  and búsqueda all match. Highlights come back as fragments: {"text": "...", "match": true}.
+}

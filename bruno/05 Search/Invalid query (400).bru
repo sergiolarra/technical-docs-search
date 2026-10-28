@@ -1,0 +1,23 @@
+meta {
+  name: Invalid query (400)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/documents/search?q=arquitectura&size=100
+  body: none
+  auth: none
+}
+
+params:query {
+  q: arquitectura
+  size: 100
+}
+
+tests {
+  test("page size above 50 is rejected", function () {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody().title).to.equal("Invalid search query");
+  });
+}

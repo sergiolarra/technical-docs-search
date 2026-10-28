@@ -1,0 +1,29 @@
+meta {
+  name: Filters
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/documents/search?q=docker&category=devops&tags=docker
+  body: none
+  auth: none
+}
+
+params:query {
+  q: docker
+  category: devops
+  tags: docker
+}
+
+tests {
+  test("every result matches the category (case-insensitive) and the tag", function () {
+    const results = res.getBody().results;
+    expect(res.getStatus()).to.equal(200);
+    expect(results.length).to.be.greaterThan(0);
+    results.forEach(r => {
+      expect(r.category.toLowerCase()).to.equal("devops");
+      expect(r.tags).to.include("docker");
+    });
+  });
+}
