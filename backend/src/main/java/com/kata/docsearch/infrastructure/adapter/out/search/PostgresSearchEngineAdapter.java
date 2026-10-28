@@ -39,6 +39,10 @@ class PostgresSearchEngineAdapter implements SearchEnginePort {
 
     private final NamedParameterJdbcTemplate jdbc;
 
+    /** A hit plus the total number of matches, computed by the window function in the same query. */
+    private record Row(SearchHit hit, long totalHits) {
+    }
+
     @Override
     public SearchResultPage search(SearchQuery query) {
         var params = new MapSqlParameterSource()
@@ -50,11 +54,15 @@ class PostgresSearchEngineAdapter implements SearchEnginePort {
                 .addValue("snippetChars", SNIPPET_SOURCE_CHARS);
         String filters = filters(query, params);
 
+        // Ranking only carries narrow columns (id, date, score); title and content are read just for
+        // the rows of the requested page. Carrying content for every match made the window spill to disk.
+        // count(*) OVER () counts every match while they are ranked, so the total comes for free.
         String sql = """
                 WITH q AS (SELECT websearch_to_tsquery('%1$s', :text) AS query),
-                page AS (
-                    SELECT d.id, d.title, d.author, d.category, d.tags, d.version, d.format, d.created_at, d.content,
-                           ts_rank_cd(d.search_vector, q.query, 1) AS score
+                ranked AS (
+                    SELECT d.id, d.created_at,
+                           ts_rank_cd(d.search_vector, q.query, 1) AS score,
+                           count(*) OVER () AS total_hits
                     FROM documents d CROSS JOIN q
                     WHERE d.status = 'INDEXADO'
                       AND d.search_vector @@ q.query
@@ -62,16 +70,23 @@ class PostgresSearchEngineAdapter implements SearchEnginePort {
                     ORDER BY score DESC, d.created_at DESC, d.id
                     LIMIT :limit OFFSET :offset
                 )
-                SELECT p.id, p.author, p.category, p.tags, p.version, p.format, p.created_at, p.score,
-                       ts_headline('%1$s', p.title, q.query, :titleOptions) AS title_headline,
-                       ts_headline('%1$s', left(coalesce(p.content, ''), :snippetChars), q.query, :snippetOptions) AS snippet_headline
-                FROM page p CROSS JOIN q
-                ORDER BY p.score DESC, p.created_at DESC, p.id
+                SELECT d.id, d.author, d.category, d.tags, d.version, d.format, d.created_at, r.score, r.total_hits,
+                       ts_headline('%1$s', d.title, q.query, :titleOptions) AS title_headline,
+                       ts_headline('%1$s', left(coalesce(d.content, ''), :snippetChars), q.query, :snippetOptions) AS snippet_headline
+                FROM ranked r
+                JOIN documents d ON d.id = r.id
+                CROSS JOIN q
+                ORDER BY r.score DESC, r.created_at DESC, r.id
                 """.formatted(TS_CONFIG, filters);
 
-        List<SearchHit> hits = jdbc.query(sql, params, this::mapRow);
-        long total = isLastPage(query, hits) ? query.offset() + hits.size() : count(filters, params);
-        return new SearchResultPage(hits, query.page(), query.size(), total);
+        List<Row> rows = jdbc.query(sql, params, this::mapRow);
+        long total = rows.isEmpty() ? totalForEmptyPage(query, filters, params) : rows.getFirst().totalHits();
+        return new SearchResultPage(rows.stream().map(Row::hit).toList(), query.page(), query.size(), total);
+    }
+
+    /** An empty first page means no matches; an empty later page (past the end) needs a real count. */
+    private long totalForEmptyPage(SearchQuery query, String filters, MapSqlParameterSource params) {
+        return query.offset() == 0 ? 0 : count(filters, params);
     }
 
     /** Only fixed SQL fragments are appended; every user value is a bound parameter. */
@@ -104,8 +119,8 @@ class PostgresSearchEngineAdapter implements SearchEnginePort {
         return total == null ? 0 : total;
     }
 
-    private SearchHit mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new SearchHit(
+    private Row mapRow(ResultSet rs, int rowNum) throws SQLException {
+        var hit = new SearchHit(
                 rs.getObject("id", UUID.class),
                 HeadlineParser.parse(rs.getString("title_headline")),
                 rs.getString("author"),
@@ -116,5 +131,6 @@ class PostgresSearchEngineAdapter implements SearchEnginePort {
                 rs.getDouble("score"),
                 HeadlineParser.parse(rs.getString("snippet_headline")),
                 rs.getObject("created_at", OffsetDateTime.class).toInstant());
+        return new Row(hit, rs.getLong("total_hits"));
     }
 }
