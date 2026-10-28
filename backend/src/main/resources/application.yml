@@ -18,6 +18,17 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:docsearch}
     password: ${RABBITMQ_PASSWORD:changeme}
+    listener:
+      simple:
+        concurrency: ${PROCESSING_CONCURRENCY:2}
+        max-concurrency: ${PROCESSING_MAX_CONCURRENCY:4}
+        prefetch: 1                       # fair distribution: each consumer takes one task at a time
+        default-requeue-rejected: false   # after retries, to the DLQ (do not requeue in a loop)
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1s
+          multiplier: 2
   servlet:
     multipart:
       max-file-size: ${UPLOAD_MAX_FILE_SIZE:10MB}
