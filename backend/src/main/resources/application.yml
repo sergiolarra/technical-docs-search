@@ -44,3 +44,5 @@ management:
 app:
   storage:
     path: ${STORAGE_PATH:./uploads}
+  processing:
+    max-extracted-chars: ${MAX_EXTRACTED_CHARS:5000000}
