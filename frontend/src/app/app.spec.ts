@@ -3,13 +3,21 @@ import { provideRouter } from '@angular/router';
 import { FakeEventSource, fakeEventSourceFactory } from '../testing/fake-event-source';
 import { App } from './app';
 import { EVENT_SOURCE_FACTORY } from './core/events/document-events.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('App', () => {
   beforeEach(async () => {
+    sessionStorage.clear();
     FakeEventSource.instances = [];
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([]), { provide: EVENT_SOURCE_FACTORY, useValue: fakeEventSourceFactory }],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: EVENT_SOURCE_FACTORY, useValue: fakeEventSourceFactory },
+      ],
     }).compileComponents();
   });
 

@@ -2,7 +2,7 @@
   <a class="brand" routerLink="/search">Technical Docs Search</a>
   <nav class="nav" aria-label="Principal">
     <a mat-button routerLink="/search" routerLinkActive="active">Buscar</a>
-    <a mat-button routerLink="/upload" routerLinkActive="active">Cargar</a>
+    <a mat-button routerLink="/upload" routerLinkActive="active">Cargar@if (pendingUploads() > 0) {<span class="pending" [attr.aria-label]="pendingUploads() + ' en proceso'">{{ pendingUploads() }}</span>}</a>
   </nav>
   <span class="live" [class.online]="connected()" role="status"
         [attr.title]="connected() ? 'Recibiendo actualizaciones en tiempo real' : 'Reconectando con el servidor'">

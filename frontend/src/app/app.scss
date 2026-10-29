@@ -21,6 +21,17 @@
     text-decoration: underline;
     text-underline-offset: 6px;
   }
+  .pending {
+    display: inline-block;
+    min-width: 18px;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #fff4d6;
+    color: #7a5600;
+    font-size: 12px;
+    line-height: 18px;
+  }
 }
 
 .live {
@@ -34,7 +45,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #9e9e9e;
+    background: var(--mat-sys-outline);
   }
 
   &.online .dot {
