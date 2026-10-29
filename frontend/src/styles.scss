@@ -7,6 +7,9 @@
 
 html {
   height: 100%;
+  // The theme resolves colors with light-dark(); our custom styles are light-only, so pin the scheme
+  color-scheme: light;
+
   @include mat.theme(
     (
       color: (
@@ -21,17 +24,17 @@ html {
 
 body {
   height: 100%;
-}
-
-body {
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  // Material 3 system tokens: page colors and font come from the theme
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
 }
 
-/* Search highlights */
+/* Search highlights in the tertiary (orange) palette of the theme */
 mark {
-  background: #fff1a8;
-  color: inherit;
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
   padding: 0 2px;
   border-radius: 2px;
 }
