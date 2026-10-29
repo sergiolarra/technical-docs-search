@@ -1,0 +1,94 @@
+<div class="top">
+  <button mat-button type="button" (click)="back()">← Back</button>
+</div>
+
+@switch (view().kind) {
+  @case ('loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading document" />
+  }
+  @case ('not-found') {
+    <section class="message">
+      <h1>Document not found</h1>
+      <p>It may have been removed, or the link is incorrect.</p>
+      <a mat-flat-button routerLink="/search">Go to search</a>
+    </section>
+  }
+  @case ('error') {
+    <section class="message" role="alert">
+      <h1>The document could not be loaded</h1>
+      <p>Check your connection and try again.</p>
+      <button mat-flat-button type="button" (click)="retry()">Retry</button>
+    </section>
+  }
+  @case ('loaded') {
+    @if (document(); as doc) {
+      <div class="layout">
+        <article class="document">
+          <header class="document-header">
+            <h1>{{ doc.title }}</h1>
+            <app-status-badge [status]="doc.status" />
+          </header>
+
+          @switch (doc.status) {
+            @case ('PROCESANDO') {
+              <div class="notice" role="status">
+                <mat-spinner [diameter]="20" aria-hidden="true" />
+                <span>This document is still being processed. It will appear here automatically when it is ready.</span>
+              </div>
+            }
+            @case ('ERROR') {
+              <div class="notice failed" role="alert">
+                <strong>The document could not be processed.</strong>
+                <span>{{ doc.errorMessage }}</span>
+              </div>
+            }
+            @default {
+              @if (doc.format === 'MARKDOWN') {
+                <markdown class="markdown" [data]="visibleContent()" />
+              } @else {
+                <pre class="plain">{{ visibleContent() }}</pre>
+              }
+              @if (isTruncated()) {
+                <div class="truncated">
+                  <span>Showing the first {{ previewChars | number }} of {{ contentLength() | number }} characters.</span>
+                  <button mat-stroked-button type="button" (click)="showFullContent.set(true)">Show full document</button>
+                </div>
+              }
+            }
+          }
+        </article>
+
+        <aside class="metadata" aria-label="Document details">
+          <mat-card>
+            <mat-card-content>
+              <dl>
+                <dt>Author</dt>
+                <dd>{{ doc.author }}</dd>
+                <dt>Category</dt>
+                <dd>{{ doc.category }}</dd>
+                <dt>Version</dt>
+                <dd>{{ doc.version }}</dd>
+                <dt>Format</dt>
+                <dd>{{ doc.format }}</dd>
+                <dt>File</dt>
+                <dd>{{ doc.originalFilename }} · {{ formatSize(doc.size) }}</dd>
+                <dt>Uploaded</dt>
+                <dd>{{ doc.createdAt | date: 'medium' }}</dd>
+                <dt>Updated</dt>
+                <dd>{{ doc.updatedAt | date: 'medium' }}</dd>
+                <dt>Tags</dt>
+                <dd class="tags">
+                  @for (tag of doc.tags; track tag) {
+                    <a [routerLink]="['/search']" [queryParams]="{ q: tag }">#{{ tag }}</a>
+                  } @empty {
+                    —
+                  }
+                </dd>
+              </dl>
+            </mat-card-content>
+          </mat-card>
+        </aside>
+      </div>
+    }
+  }
+}

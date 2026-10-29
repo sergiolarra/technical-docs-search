@@ -15,3 +15,12 @@ scripts/seed/clean.sh                       # elimina los documentos sintéticos
 
 k6 se instala con `brew install k6`, o se ejecuta con Docker:
 `docker run --rm -i -e BASE_URL=http://host.docker.internal:8080 grafana/k6 run - < scripts/benchmark/search-load.js`
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm start                    # http://localhost:4200 (proxies /api to the backend on :8080)
+npx ng test --watch=false    # unit tests (Vitest)
+```

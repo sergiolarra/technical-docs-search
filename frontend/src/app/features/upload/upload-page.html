@@ -1,0 +1,112 @@
+<header class="page-header">
+  <h1>Upload documents</h1>
+  <p>PDF, TXT or Markdown up to 10 MB. Processing continues in the background and you will be notified when it finishes.</p>
+</header>
+
+<div class="layout">
+  <mat-card>
+    <mat-card-content>
+      <mat-button-toggle-group class="mode" [value]="mode()" (change)="setMode($event.value)" aria-label="Upload type">
+        <mat-button-toggle value="single">Single document</mat-button-toggle>
+        <mat-button-toggle value="batch">Batch upload</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label class="drop-zone" [class.dragging]="dragging()"
+               (dragover)="onDragOver($event)" (dragleave)="dragging.set(false)" (drop)="onDrop($event)">
+          <input type="file" class="file-input" [accept]="accept" [multiple]="mode() === 'batch'"
+                 (change)="onFileInput($any($event.target))" />
+          <strong>{{ mode() === 'single' ? 'Drop a file here' : 'Drop up to 20 files here' }}</strong>
+          <span>or click to browse</span>
+        </label>
+
+        @if (files().length > 0) {
+          <ul class="file-list">
+            @for (file of files(); track file) {
+              <li>
+                <span class="name">{{ file.name }}</span>
+                <span class="size">{{ formatSize(file.size) }}</span>
+                <button mat-button type="button" (click)="removeFile(file)" [attr.aria-label]="'Remove ' + file.name">Remove</button>
+              </li>
+            }
+          </ul>
+        } @else if (submitted()) {
+          <p class="error" role="alert">Select at least one file</p>
+        }
+        @for (problem of fileProblems(); track $index) {
+          <p class="error" role="alert">{{ problem.fileName ? problem.fileName + ': ' : '' }}{{ problem.message }}</p>
+        }
+
+        @if (mode() === 'single') {
+          <mat-form-field>
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" />
+            <mat-error>{{ errorFor('title') }}</mat-error>
+          </mat-form-field>
+        }
+
+        <div class="row">
+          <mat-form-field>
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" />
+            <mat-error>{{ errorFor('author') }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Category</mat-label>
+            <input matInput formControlName="category" />
+            <mat-error>{{ errorFor('category') }}</mat-error>
+          </mat-form-field>
+          <mat-form-field class="version">
+            <mat-label>Version</mat-label>
+            <input matInput formControlName="version" />
+            <mat-error>{{ errorFor('version') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #tagGrid aria-label="Tags">
+            @for (tag of form.controls.tags.value; track tag) {
+              <mat-chip-row (removed)="removeTag(tag)">
+                {{ tag }}
+                <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">×</button>
+              </mat-chip-row>
+            }
+            <input placeholder="Type and press Enter" [matChipInputFor]="tagGrid"
+                   [matChipInputSeparatorKeyCodes]="separatorKeys" (matChipInputTokenEnd)="addTag($event)" />
+          </mat-chip-grid>
+          <mat-hint>Optional, up to 20</mat-hint>
+        </mat-form-field>
+
+        @if (serverError(); as message) {
+          <p class="error" role="alert">{{ message }}</p>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            Uploading…
+          } @else if (mode() === 'single') {
+            Upload document
+          } @else {
+            Upload {{ files().length }} file(s)
+          }
+        </button>
+      </form>
+
+      @if (batchResults(); as results) {
+        <section class="batch-results" aria-live="polite">
+          <h2>Batch upload result</h2>
+          <ul>
+            @for (item of results; track $index) {
+              <li [class.rejected]="!item.accepted">
+                <strong>{{ item.originalFilename }}</strong>: {{ item.accepted ? 'accepted, processing' : item.error }}
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <app-recent-uploads [uploads]="uploads()" (clear)="clearFinished()" />
+</div>

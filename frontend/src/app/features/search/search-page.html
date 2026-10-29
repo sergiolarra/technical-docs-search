@@ -1,0 +1,90 @@
+<header class="page-header">
+  <h1>Search documents</h1>
+</header>
+
+<form class="search-bar" role="search" (submit)="$event.preventDefault()">
+  <mat-form-field class="query">
+    <mat-label>Search titles, metadata and content</mat-label>
+    <input matInput type="search" [formControl]="queryControl" maxlength="200" autocomplete="off" />
+    <mat-hint>"exact phrase", -exclude, OR</mat-hint>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Category</mat-label>
+    <input matInput [formControl]="categoryControl" autocomplete="off" />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Tags</mat-label>
+    <input matInput [formControl]="tagsControl" autocomplete="off" />
+    <mat-hint>Comma separated</mat-hint>
+  </mat-form-field>
+</form>
+
+<div class="progress">
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Searching" />
+  }
+</div>
+
+@if (error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+
+@if (!state().q) {
+  <section class="empty">
+    <p>Search across titles, metadata and the full text of indexed documents.</p>
+    <ul class="tips">
+      <li><code>hexagonal architecture</code> documents with both words</li>
+      <li><code>"full text"</code> exact phrase</li>
+      <li><code>docker -kubernetes</code> exclude a word</li>
+      <li><code>angular OR react</code> either word</li>
+    </ul>
+  </section>
+} @else {
+  @if (response(); as result) {
+    <p class="summary" aria-live="polite">
+      {{ result.totalHits }} result{{ result.totalHits === 1 ? '' : 's' }} · {{ result.tookMs }} ms
+    </p>
+
+    @if (newDocuments()) {
+      <div class="banner" role="status">
+        <span>New documents were indexed.</span>
+        <button mat-button type="button" (click)="refresh()">Refresh results</button>
+      </div>
+    }
+
+    @if (result.results.length === 0) {
+      <p class="no-results">No documents match "{{ state().q }}". Try other words or remove filters.</p>
+    } @else {
+      <ul class="results">
+        @for (hit of result.results; track hit.id) {
+          <li class="result">
+            <a class="title" [routerLink]="['/documents', hit.id]">
+              <app-highlighted-text [fragments]="hit.titleHighlight" />
+            </a>
+            <div class="meta">
+              {{ hit.author }} · {{ hit.category }} · v{{ hit.version }} · {{ hit.format }} · {{ hit.createdAt | date: 'mediumDate' }}
+            </div>
+            <p class="snippet"><app-highlighted-text [fragments]="hit.snippet" /></p>
+            @if (hit.tags.length > 0) {
+              <div class="tags">
+                @for (tag of hit.tags; track tag) {
+                  <button type="button" class="tag" (click)="filterByTag(tag)" [attr.aria-label]="'Filter by tag ' + tag">
+                    #{{ tag }}
+                  </button>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+
+      <mat-paginator
+        [length]="result.totalHits"
+        [pageIndex]="state().page"
+        [pageSize]="state().size"
+        [pageSizeOptions]="pageSizes"
+        (page)="onPage($event)"
+        aria-label="Results pages" />
+    }
+  }
+}
