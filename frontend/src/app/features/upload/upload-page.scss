@@ -25,8 +25,21 @@ form {
 }
 
 .drop-zone {
-  // ...keep the layout properties as they are...
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 16px;
+  margin-bottom: 12px;
   border: 2px dashed var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+
+  span {
+    color: var(--mat-sys-on-surface-variant);
+  }
 
   &.dragging,
   &:hover {
@@ -34,6 +47,7 @@ form {
     background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
   }
 
+  // Keyboard users see where the focus is
   &:focus-within {
     outline: 2px solid var(--mat-sys-primary);
     outline-offset: 2px;

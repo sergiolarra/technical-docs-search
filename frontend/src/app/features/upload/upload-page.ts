@@ -39,6 +39,7 @@ export class UploadPage {
   private readonly api = inject(DocumentApiService);
   private readonly tracker = inject(UploadTracker);
   private readonly destroyRef = inject(DestroyRef);
+  private autoTitle = '';
 
   protected readonly separatorKeys = [ENTER, COMMA] as const;
   protected readonly accept = ALLOWED_EXTENSIONS.map((extension) => `.${extension}`).join(',');
@@ -93,6 +94,9 @@ export class UploadPage {
 
   protected removeFile(file: File): void {
     this.files.update((list) => list.filter((candidate) => candidate !== file));
+    if (this.mode() === 'single') {
+      this.suggestTitle(null);
+    }
   }
 
   protected addTag(event: MatChipInputEvent): void {
@@ -112,10 +116,10 @@ export class UploadPage {
   protected errorFor(field: TextField): string {
     const errors = this.form.controls[field].errors;
     if (errors?.['required']) {
-      return 'Obligatorio';
+      return 'Required';
     }
     if (errors?.['maxlength']) {
-      return `Máximo ${errors['maxlength'].requiredLength} caracteres`;
+      return `At most ${errors['maxlength'].requiredLength} characters`;
     }
     return errors?.['server'] ?? '';
   }
@@ -157,10 +161,18 @@ export class UploadPage {
     this.serverError.set(null);
     this.batchResults.set(null);
     this.files.set(this.mode() === 'single' ? selected.slice(0, 1) : [...this.files(), ...selected]);
-    const title = this.form.controls.title;
-    if (this.mode() === 'single' && !title.value) {
-      title.setValue(titleFromFileName(selected[0].name));
+    if (this.mode() === 'single') {
+      this.suggestTitle(selected[0].name);
     }
+  }
+
+  private suggestTitle(fileName: string | null): void {
+    const title = this.form.controls.title;
+    if (title.value && title.value !== this.autoTitle) {
+      return; // the user typed their own title
+    }
+    this.autoTitle = fileName ? titleFromFileName(fileName) : '';
+    title.setValue(this.autoTitle);
   }
 
   private trackBatch(results: BatchUploadItem[]): void {
@@ -181,6 +193,7 @@ export class UploadPage {
   private resetAfterUpload(): void {
     this.files.set([]);
     this.submitted.set(false);
+    this.autoTitle = '';
     this.form.controls.title.reset('');
   }
 
@@ -190,7 +203,7 @@ export class UploadPage {
       return;
     }
     const problem = problemOf(error);
-    this.serverError.set(problem.detail ?? problem.title ?? 'No se pudo cargar el documento');
+    this.serverError.set(problem.detail ?? problem.title ?? 'The document could not be uploaded');
     for (const [field, message] of Object.entries(problem.errors ?? {})) {
       this.form.get(field)?.setErrors({ server: message });
     }
