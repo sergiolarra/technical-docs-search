@@ -312,7 +312,7 @@ En producción, las mismas imágenes se desplegarían en un orquestador (Kuberne
 | Backend: dominio y casos de uso | JUnit 5 + Mockito | Transiciones de estado, validaciones, orden "guardar → encolar", idempotencia, clasificación de errores, publicación tras el commit |
 | Backend: integración | Testcontainers (PostgreSQL 17 y RabbitMQ 4 reales) | Carga → cola → consumidor → `INDEXADO`; búsqueda con tildes, frases, exclusiones, filtros y paginación; SSE con servidor HTTP y cliente reales |
 | Backend: reglas | `NoLikeOperatorTest` | Ningún `LIKE` en el código de producción |
-| Frontend | Vitest (30 tests) | Servicio SSE, seguimiento de cargas (carrera y reconciliación), validación, estado de búsqueda en la URL, páginas de búsqueda y visor, resaltado seguro |
+| Frontend | Vitest (33 tests) | Servicio SSE, seguimiento de cargas (carrera y reconciliación), validación, estado de búsqueda en la URL, páginas de carga, búsqueda y visor, resaltado seguro |
 | Pila completa | CI con Docker | Construye las imágenes, espera los healthchecks y prueba la app y la API a través de nginx |
 | Manual | Colección de Bruno (`bruno/`) | Carga, errores, lote y búsqueda, con aserciones |
 | Rendimiento | k6 + `EXPLAIN` | p95 < 1 s con umbrales automáticos y uso del índice GIN |

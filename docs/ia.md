@@ -377,6 +377,7 @@ Reglas de calidad (ambos):
 | Fragmento de CSS abreviado | Captura: la zona de arrastre había perdido su diseño | Bloque completo |
 | Título automático solo si el campo estaba vacío | Captura: un documento con el título de otro archivo | Se sustituye el título sugerido si el usuario no lo editó |
 | nginx escuchando solo en IPv4 | El contenedor del frontend quedó *unhealthy* | `listen [::]:80` y healthcheck contra `127.0.0.1` |
+| Campo de tags sin `matChipInputAddOnBlur`: un tag escrito sin pulsar Enter se descartaba | Prueba manual: el documento se guardaba sin el tag que había escrito | Primero un test de regresión, que fallaba en 2 casos; después la corrección, con los 33 tests del frontend en verde |
 
 ### Correcciones manuales en el proceso
 
