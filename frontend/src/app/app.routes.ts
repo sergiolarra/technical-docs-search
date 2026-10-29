@@ -5,17 +5,17 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'search' },
   {
     path: 'search',
-    title: 'Buscar · Technical Docs Search',
+    title: 'Search · Technical Docs Search',
     loadComponent: () => import('./features/search/search-page').then((m) => m.SearchPage),
   },
   {
     path: 'upload',
-    title: 'Cargar · Technical Docs Search',
+    title: 'Upload · Technical Docs Search',
     loadComponent: () => import('./features/upload/upload-page').then((m) => m.UploadPage),
   },
   {
     path: 'documents/:id',
-    title: 'Documento · Technical Docs Search',
+    title: 'Documents · Technical Docs Search',
     loadComponent: () => import('./features/viewer/document-viewer-page').then((m) => m.DocumentViewerPage),
   },
   { path: '**', redirectTo: 'search' },

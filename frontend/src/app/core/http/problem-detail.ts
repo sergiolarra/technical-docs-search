@@ -12,5 +12,5 @@ export function problemOf(error: unknown): ProblemDetail {
   if (error instanceof HttpErrorResponse && error.error && typeof error.error === 'object') {
     return error.error as ProblemDetail;
   }
-  return { title: 'Error', detail: 'No se pudo completar la operación' };
+  return { title: 'Error', detail: 'The operation could not be completed' };
 }

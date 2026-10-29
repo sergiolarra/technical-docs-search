@@ -15,9 +15,9 @@ export const httpErrorsInterceptor: HttpInterceptorFn = (request, next) => {
       if (error instanceof HttpErrorResponse && (error.status === 0 || error.status >= 500)) {
         const message =
           error.status === 0
-            ? 'No hay conexión con el servidor'
-            : (problemOf(error).detail ?? 'Error inesperado del servidor');
-        snackBar.open(message, 'Cerrar', { duration: 6000 });
+            ? 'Cannot reach the server'
+            : (problemOf(error).detail ?? 'Unexpected server error');
+        snackBar.open(message, 'Close', { duration: 6000 });
       }
       return throwError(() => error);
     }),

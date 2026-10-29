@@ -26,7 +26,7 @@ describe('App', () => {
     await fixture.whenStable();
 
     const links = [...fixture.nativeElement.querySelectorAll('nav a')].map((a: HTMLElement) => a.textContent?.trim());
-    expect(links).toEqual(['Buscar', 'Cargar']);
+    expect(links).toEqual(['Search', 'Upload']);
   });
 
   it('opens the event stream and shows when it is live', async () => {
@@ -34,10 +34,10 @@ describe('App', () => {
     await fixture.whenStable();
     const indicator = (): string => fixture.nativeElement.querySelector('.live').textContent.trim();
 
-    expect(indicator()).toBe('Reconectando…');
+    expect(indicator()).toBe('Reconnecting…');
 
     FakeEventSource.latest().emit('connected', {});
     await fixture.whenStable();
-    expect(indicator()).toBe('En vivo');
+    expect(indicator()).toBe('Live');
   });
 });

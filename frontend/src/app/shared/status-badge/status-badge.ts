@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { DocumentStatus } from '../../core/models/document.model';
 
 const LABELS: Record<DocumentStatus, string> = {
-  PROCESANDO: 'Procesando',
-  INDEXADO: 'Indexado',
+  PROCESANDO: 'Processing',
+  INDEXADO: 'Indexed',
   ERROR: 'Error',
 };
 

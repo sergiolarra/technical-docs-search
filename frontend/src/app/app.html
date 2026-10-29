@@ -1,12 +1,12 @@
 <mat-toolbar class="toolbar">
   <a class="brand" routerLink="/search">Technical Docs Search</a>
-  <nav class="nav" aria-label="Principal">
-    <a mat-button routerLink="/search" routerLinkActive="active">Buscar</a>
-    <a mat-button routerLink="/upload" routerLinkActive="active">Cargar@if (pendingUploads() > 0) {<span class="pending" [attr.aria-label]="pendingUploads() + ' en proceso'">{{ pendingUploads() }}</span>}</a>
+  <nav class="nav" aria-label="Main">
+    <a mat-button routerLink="/search" routerLinkActive="active">Search</a>
+    <a mat-button routerLink="/upload" routerLinkActive="active">Upload@if (pendingUploads() > 0) {<span class="pending" [attr.aria-label]="pendingUploads() + ' processing'">{{ pendingUploads() }}</span>}</a>
   </nav>
   <span class="live" [class.online]="connected()" role="status"
-        [attr.title]="connected() ? 'Recibiendo actualizaciones en tiempo real' : 'Reconectando con el servidor'">
-    <span class="dot"></span>{{ connected() ? 'En vivo' : 'Reconectando…' }}
+        [attr.title]="connected() ? 'Receiving real-time updates' : 'Reconnecting to the server'">
+    <span class="dot"></span>{{ connected() ? 'Live' : 'Reconnecting…' }}
   </span>
 </mat-toolbar>
 

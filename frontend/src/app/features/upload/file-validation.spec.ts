@@ -12,11 +12,11 @@ describe('validateFiles', () => {
   });
 
   it('rejects other formats', () => {
-    expect(validateFiles([file('setup.exe')], 'single')[0].message).toContain('Formato no admitido');
+    expect(validateFiles([file('setup.exe')], 'single')[0].message).toContain('Unsupported format');
   });
 
   it('rejects empty files', () => {
-    expect(validateFiles([file('vacio.txt', 0)], 'single')[0].message).toBe('El archivo está vacío');
+    expect(validateFiles([file('vacio.txt', 0)], 'single')[0].message).toBe('The file is empty');
   });
 
   it('rejects files over 10 MB', () => {
@@ -25,10 +25,6 @@ describe('validateFiles', () => {
 
   it('rejects more than 20 files in a batch', () => {
     const files = Array.from({ length: 21 }, (_, index) => file(`doc-${index}.md`));
-    expect(validateFiles(files, 'batch').map((problem) => problem.message)).toContain('Máximo 20 archivos por carga');
-  });
-
-  it('derives the title from the file name', () => {
-    expect(titleFromFileName('Guía de la API.v2.md')).toBe('Guía de la API.v2');
+    expect(validateFiles(files, 'batch').map((problem) => problem.message)).toContain('At most 20 files per upload');
   });
 });

@@ -32,10 +32,10 @@ export class App {
   private announce(upload: TrackedUpload): void {
     const message =
       upload.status === 'INDEXADO'
-        ? `"${upload.title}" ya está indexado y se puede buscar`
-        : `"${upload.title}" no se pudo procesar`;
+        ? `"${upload.title}" is indexed and ready to search`
+        : `"${upload.title}" could not be processed`;
     this.snackBar
-      .open(message, 'Ver', { duration: 6000 })
+      .open(message, 'View', { duration: 6000 })
       .onAction()
       .subscribe(() => this.router.navigate(['/documents', upload.id]));
   }

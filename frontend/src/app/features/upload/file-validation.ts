@@ -16,19 +16,19 @@ export interface FileProblem {
 export function validateFiles(files: File[], mode: UploadMode): FileProblem[] {
   const problems: FileProblem[] = [];
   if (mode === 'single' && files.length > 1) {
-    problems.push({ fileName: '', message: 'Selecciona un solo archivo o usa la carga masiva' });
+    problems.push({ fileName: '', message: 'Select a single file or use batch upload' });
   }
   if (files.length > MAX_BATCH_FILES) {
-    problems.push({ fileName: '', message: `Máximo ${MAX_BATCH_FILES} archivos por carga` });
+    problems.push({ fileName: '', message: `At most ${MAX_BATCH_FILES} files per upload` });
   }
   for (const file of files) {
     const extension = file.name.includes('.') ? file.name.split('.').pop()!.toLowerCase() : '';
     if (!(ALLOWED_EXTENSIONS as readonly string[]).includes(extension)) {
-      problems.push({ fileName: file.name, message: 'Formato no admitido (solo PDF, TXT o Markdown)' });
+      problems.push({ fileName: file.name, message: 'Unsupported format (PDF, TXT or Markdown only)' });
     } else if (file.size === 0) {
-      problems.push({ fileName: file.name, message: 'El archivo está vacío' });
+      problems.push({ fileName: file.name, message: 'The file is empty' });
     } else if (file.size > MAX_FILE_SIZE_BYTES) {
-      problems.push({ fileName: file.name, message: 'Supera el máximo de 10 MB' });
+      problems.push({ fileName: file.name, message: 'Exceeds the 10 MB limit' });
     }
   }
   return problems;
