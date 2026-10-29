@@ -73,7 +73,8 @@
               </mat-chip-row>
             }
             <input placeholder="Type and press Enter" [matChipInputFor]="tagGrid"
-                   [matChipInputSeparatorKeyCodes]="separatorKeys" (matChipInputTokenEnd)="addTag($event)" />
+                   [matChipInputSeparatorKeyCodes]="separatorKeys" [matChipInputAddOnBlur]="true"
+                   (matChipInputTokenEnd)="addTag($event)" />
           </mat-chip-grid>
           <mat-hint>Optional, up to 20</mat-hint>
         </mat-form-field>
