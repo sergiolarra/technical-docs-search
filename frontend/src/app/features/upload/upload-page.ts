@@ -16,6 +16,7 @@ import { BatchUploadItem } from '../../core/models/document.model';
 import { UploadTracker } from '../../core/uploads/upload-tracker.service';
 import { ALLOWED_EXTENSIONS, UploadMode, titleFromFileName, validateFiles } from './file-validation';
 import { RecentUploads } from './recent-uploads';
+import { formatSize} from '../../shared/format';
 
 type TextField = 'title' | 'author' | 'category' | 'version';
 
@@ -53,6 +54,7 @@ export class UploadPage {
   protected readonly serverError = signal<string | null>(null);
   protected readonly batchResults = signal<BatchUploadItem[] | null>(null);
   protected readonly uploads = this.tracker.uploads;
+  protected readonly formatSize = formatSize;
 
   protected readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -122,10 +124,6 @@ export class UploadPage {
       return `At most ${errors['maxlength'].requiredLength} characters`;
     }
     return errors?.['server'] ?? '';
-  }
-
-  protected formatSize(bytes: number): string {
-    return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 
   protected submit(): void {
