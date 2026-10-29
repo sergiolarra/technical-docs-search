@@ -1,0 +1,104 @@
+.page-header p {
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mode {
+  margin-bottom: 16px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drop-zone {
+  // ...keep the layout properties as they are...
+  border: 2px dashed var(--mat-sys-outline-variant);
+
+  &.dragging,
+  &:hover {
+    border-color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Visually hidden but still focusable and clickable through its label
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .size {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 13px;
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 140px;
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.error {
+  color: var(--mat-sys-error);
+  margin: 4px 0;
+}
+
+.batch-results {
+  margin-top: 16px;
+
+  h2 {
+    font-size: 16px;
+  }
+
+  ul {
+    padding-left: 18px;
+  }
+
+  .rejected {
+    color: var(--mat-sys-error);
+  }
+}
