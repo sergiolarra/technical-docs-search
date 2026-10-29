@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,8 +22,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class TikaAdaptersTest {
 
     private final TikaContentTypeDetector detector = new TikaContentTypeDetector();
-    private final TikaTextExtractor extractor = new TikaTextExtractor(
-            new AppProperties(new AppProperties.Storage("./uploads"), new AppProperties.Processing(1_000_000)));
+    private final TikaTextExtractor extractor = new TikaTextExtractor(new AppProperties(
+            new AppProperties.Storage("./uploads"),
+            new AppProperties.Processing(1_000_000),
+            new AppProperties.Events(Duration.ofMinutes(30), Duration.ofSeconds(20))));
 
     @Test
     void detectsPdfByContentEvenWithWrongExtension() throws IOException {

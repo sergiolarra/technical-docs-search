@@ -57,3 +57,6 @@ app:
     path: ${STORAGE_PATH:./uploads}
   processing:
     max-extracted-chars: ${MAX_EXTRACTED_CHARS:5000000}
+  events:
+    emitter-timeout: ${SSE_EMITTER_TIMEOUT:30m}
+    heartbeat-interval: ${SSE_HEARTBEAT_INTERVAL:20s}
