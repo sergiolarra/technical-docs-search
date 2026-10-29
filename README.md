@@ -24,3 +24,26 @@ npm install
 npm start                    # http://localhost:4200 (proxies /api to the backend on :8080)
 npx ng test --watch=false    # unit tests (Vitest)
 ```
+
+## Quick start (Docker)
+
+```bash
+docker compose up --build
+```
+
+| Service | URL |
+| --- | --- |
+| Web app | http://localhost |
+| API (direct) | http://localhost:8080 |
+| Swagger UI | http://localhost:8080/swagger-ui.html |
+| RabbitMQ | http://localhost:15672 (docsearch / changeme) |
+
+No `.env` is needed: every setting has a default. Copy `.env.example` to `.env` to override them.
+
+## Development
+
+```bash
+docker compose up -d postgres rabbitmq     # infrastructure only
+cd backend && ./mvnw spring-boot:run       # API on :8080
+cd frontend && npm start                   # app on :4200, proxies /api to :8080
+```
